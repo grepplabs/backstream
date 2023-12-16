@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package backstream;
+
+option go_package = "github.com/grepplabs/backstream/internal/message";
+
+import "google/protobuf/struct.proto";
+
+message Message {
+  enum Type {
+    NOTIFY = 0;
+    REQUEST = 1;
+    RESPONSE = 2;
+  }
+
+  string id = 1;
+  Type type = 2;
+  bytes data = 3;
+}
+
+message EventHTTPRequest {
+  string method = 1;
+  string rawPath = 2;
+  string rawQuery = 3;
+  map<string, google.protobuf.ListValue> headers = 4;
+  bytes body = 5;
+}
+
+message EventHTTPResponse {
+  int32 statusCode = 1;
+  map<string, google.protobuf.ListValue> headers = 2;
+  bytes body = 3;
+}

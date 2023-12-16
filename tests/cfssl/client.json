@@ -1,0 +1,15 @@
+{
+  "CN": "client",
+  "key": {
+    "algo": "rsa",
+    "size": 4096
+  },
+  "names": [
+    {
+      "O": "Client"
+    }
+  ],
+  "hosts": [
+    "client"
+  ]
+}

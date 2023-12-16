@@ -1,0 +1,19 @@
+{
+  "CN": "server",
+  "key": {
+    "algo": "rsa",
+    "size": 4096
+  },
+  "names": [
+    {
+      "O": "Server"
+    }
+  ],
+  "hosts": [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "server",
+    "proxy"
+  ]
+}

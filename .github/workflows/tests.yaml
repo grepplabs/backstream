@@ -1,0 +1,35 @@
+name: tests
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          check-latest: true
+      - run: go version
+      - name: Vendor
+        run: go mod vendor
+      - name: Build
+        run: go build -v ./...
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        run: go test -count=1 -v ./...
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.55.2
+          skip-pkg-cache: true
+          skip-build-cache: true

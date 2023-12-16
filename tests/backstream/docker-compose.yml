@@ -1,0 +1,30 @@
+---
+version: '3.7'
+services:
+  proxy:
+    build:
+      context: ../..
+      dockerfile: ./tests/backstream/proxy/Dockerfile
+    container_name: proxy
+    ports:
+      - '8080:8080'
+    command:
+      - "-log-level=info"
+  http-1:
+    build:
+      context: ../..
+      dockerfile: ./tests/backstream/http/Dockerfile
+    container_name: http-1
+    command:
+      - "-proxy-url=ws://proxy:8080/ws"
+      - "-log-level=info"
+      - "-client-id=4711"
+  http-2:
+    build:
+      context: ../..
+      dockerfile: ./tests/backstream/http/Dockerfile
+    container_name: http-2
+    command:
+      - "-proxy-url=ws://proxy:8080/ws"
+      - "-log-level=info"
+      - "-client-id=4712"
