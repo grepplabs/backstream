@@ -291,7 +291,9 @@ func newHttpServer(ctx context.Context, codec HttpCodec, httpAddr string, proxyA
 		// forward all WS events to http server
 		mux.ServeHTTP(w, r)
 	}, codec), slog.Default())
-	client := ws.NewClient(ctx, u.String(), wsHandler, codec.MessageCodec(), ws.WithClientTLSConfig(clientTLSConfig))
+	client := ws.NewClient(ctx, u.String(), wsHandler, codec.MessageCodec(), ws.WithClientTLSConfigFunc(func() *tls.Config {
+		return clientTLSConfig
+	}))
 	client.Start()
 
 	mux.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {

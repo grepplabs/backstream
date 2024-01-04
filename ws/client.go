@@ -26,9 +26,9 @@ type Client struct {
 
 	codec Codec[*message.Message]
 
-	logger    *slog.Logger
-	clientID  string
-	tlsConfig *tls.Config
+	logger        *slog.Logger
+	clientID      string
+	tlsConfigFunc func() *tls.Config
 }
 
 type ClientOption func(*Client)
@@ -45,22 +45,22 @@ func WithClientLogger(logger *slog.Logger) ClientOption {
 	}
 }
 
-func WithClientTLSConfig(tlsConfig *tls.Config) ClientOption {
+func WithClientTLSConfigFunc(tlsConfigFunc func() *tls.Config) ClientOption {
 	return func(c *Client) {
-		c.tlsConfig = tlsConfig
+		c.tlsConfigFunc = tlsConfigFunc
 	}
 }
 
 func NewClient(parent context.Context, urlStr string, handler EventHandler, codec Codec[*message.Message], opts ...ClientOption) *Client {
 	client := &Client{
-		pool:      NewPool(),
-		parent:    parent,
-		urlStr:    urlStr,
-		handler:   handler,
-		codec:     codec,
-		logger:    slog.Default(),
-		clientID:  "",
-		tlsConfig: nil,
+		pool:          NewPool(),
+		parent:        parent,
+		urlStr:        urlStr,
+		handler:       handler,
+		codec:         codec,
+		logger:        slog.Default(),
+		clientID:      "",
+		tlsConfigFunc: nil,
 	}
 	for _, opt := range opts {
 		opt(client)
@@ -114,8 +114,9 @@ func (c *Client) connect() (*Conn, error) {
 	c.logger.Info("connecting ws to " + c.urlStr)
 
 	dialer := *websocket.DefaultDialer
-	dialer.TLSClientConfig = c.tlsConfig
-
+	if c.tlsConfigFunc != nil {
+		dialer.TLSClientConfig = c.tlsConfigFunc()
+	}
 	requestHeader := make(http.Header)
 	requestHeader.Add(HeaderClientId, c.clientID)
 
